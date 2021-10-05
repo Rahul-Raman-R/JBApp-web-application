@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="SearchTest$SearchAPITest" tests="1" skipped="0" failures="0" errors="0" timestamp="2021-10-05T13:57:15" hostname="Siqi-Cao.local" time="0.084">
+<testsuite name="SearchTest$SearchAPITest" tests="2" skipped="0" failures="0" errors="0" timestamp="2021-10-05T19:55:36" hostname="Siqi-Cao.local" time="0.111">
   <properties/>
-  <testcase name="testHTTPGetSearchEndpoint()" classname="SearchTest$SearchAPITest" time="0.084"/>
-  <system-out><![CDATA[R&D
-]]></system-out>
+  <testcase name="testHTTPGetSearchEndpointExample()" classname="SearchTest$SearchAPITest" time="0.1"/>
+  <testcase name="testHTTPCaseInsensitive()" classname="SearchTest$SearchAPITest" time="0.01"/>
+  <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

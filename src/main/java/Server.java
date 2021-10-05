@@ -84,20 +84,35 @@ public class Server {
         }, new VelocityTemplateEngine());
 
         Spark.post("/search", (req, res) -> {
-            String term = req.queryParams("job-search-term");
+            String term = "%" + req.queryParams("job-search-term") + "%";
             QueryBuilder<Employer, Integer> employerQB = getEmployerORMLiteDao().queryBuilder();
             QueryBuilder<Job, Integer> jobQB = getJobORMLiteDao().queryBuilder();
-            jobQB.where()
+            List<Job> returnJobs = new ArrayList<>();
+
+            returnJobs = jobQB.where()
                     .like(Job.JOB_TITLE, term)
                     .or()
-                    .like(Job.JOB_DOMAIN, term);
-            employerQB.where()
-                    .like(Employer.EMPLOYER_NAME, term);
-            //List<Job> results = jobQB.leftJoin(employerQB).query();
-            List<Job> results = jobQB.query();
+                    .like(Job.JOB_DOMAIN, term).query();
+            List<Employer> employersSearchName = employerQB.where().like(Employer.EMPLOYER_NAME, term).query();
+            System.out.println(employersSearchName);
+            List<Integer> employersId = new ArrayList<>();
+            for (Employer e: employersSearchName) {
+                employersId.add(e.getId());
+            }
+            List<Job> allJobs = new ArrayList<>();
+            allJobs = getJobORMLiteDao().queryForAll();
+            System.out.println(allJobs);
+            for (Job j: allJobs) {
+                if (employersId.contains(j.getEmployer().getId())) {
+                    if (!returnJobs.contains(j)){
+                        returnJobs.add(j);
+                    }
+                }
+            }
+
             res.status(201);
             res.type("application/json");
-            return new Gson().toJson(results);
+            return new Gson().toJson(returnJobs);
         });
 
     }

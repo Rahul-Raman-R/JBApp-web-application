@@ -9,6 +9,7 @@ import com.j256.ormlite.table.TableUtils;
 import model.Job;
 import okhttp3.*;
 import org.junit.jupiter.api.*;
+import spark.utils.Assert;
 
 import javax.print.attribute.standard.JobName;
 import java.io.IOException;
@@ -59,14 +60,14 @@ public class SearchTest {
         }
 
         @Test
-        public void testHTTPGetSearchEndpoint() throws IOException {
+        public void testHTTPGetSearchEndpointExample() throws IOException {
             String endpoint = BASE_URL + "/search";
             List<Job> searchResults = new ArrayList<>();
             Type listType = new TypeToken<List<Job>>() {}.getType();
             String jsonStr = "";
             // construct post form with parameters
             RequestBody formBody = new FormBody.Builder()
-                    .add("job-search-term", "R&D")
+                    .add("job-search-term", "Real Estate Agent")
                     .build();
             // post request
             Request request = new Request.Builder()
@@ -80,8 +81,8 @@ public class SearchTest {
             // parse json into job list
             searchResults = new Gson().fromJson(jsonStr, listType);
             // test
-            System.out.println(searchResults.get(0).getDomain());
-
+            //System.out.println(searchResults.get(0).getEmployer().getName());
+            assertEquals(1, searchResults.size());
         }
     }
 }
