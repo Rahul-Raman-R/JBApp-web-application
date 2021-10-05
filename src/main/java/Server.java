@@ -84,32 +84,33 @@ public class Server {
         }, new VelocityTemplateEngine());
 
         Spark.post("/search", (req, res) -> {
-            String term = "%" + req.queryParams("job-search-term") + "%";
+            String term = "%" + req.queryParams("job-search-term") + "%";   // post parameter
             QueryBuilder<Employer, Integer> employerQB = getEmployerORMLiteDao().queryBuilder();
             QueryBuilder<Job, Integer> jobQB = getJobORMLiteDao().queryBuilder();
             List<Job> returnJobs = new ArrayList<>();
 
+            // sql query to get jobs with term in job title and domain
             returnJobs = jobQB.where()
                     .like(Job.JOB_TITLE, term)
                     .or()
                     .like(Job.JOB_DOMAIN, term).query();
+            // get employers with term in employer's name
             List<Employer> employersSearchName = employerQB.where().like(Employer.EMPLOYER_NAME, term).query();
-            System.out.println(employersSearchName);
-            List<Integer> employersId = new ArrayList<>();
+            List<Integer> employersId = new ArrayList<>();  // store returned employers' ids
             for (Employer e: employersSearchName) {
                 employersId.add(e.getId());
             }
+            // traverse through all jobs and find jobs with early returned employers' ids
             List<Job> allJobs = new ArrayList<>();
             allJobs = getJobORMLiteDao().queryForAll();
             System.out.println(allJobs);
             for (Job j: allJobs) {
                 if (employersId.contains(j.getEmployer().getId())) {
                     if (!returnJobs.contains(j)){
-                        returnJobs.add(j);
+                        returnJobs.add(j);  // add into results
                     }
                 }
             }
-
             res.status(201);
             res.type("application/json");
             return new Gson().toJson(returnJobs);

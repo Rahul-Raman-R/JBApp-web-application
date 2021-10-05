@@ -15,8 +15,7 @@ import javax.print.attribute.standard.JobName;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -60,14 +59,15 @@ public class SearchTest {
         }
 
         @Test
-        public void testHTTPGetSearchEndpointExample() throws IOException {
+        public void testHTTPGetSearchEndpointCompanyNameExactly() throws IOException {
             String endpoint = BASE_URL + "/search";
             List<Job> searchResults = new ArrayList<>();
             Type listType = new TypeToken<List<Job>>() {}.getType();
             String jsonStr = "";
+
             // construct post form with parameters
             RequestBody formBody = new FormBody.Builder()
-                    .add("job-search-term", "Real Estate Agent")
+                    .add("job-search-term", "Eyemed")
                     .build();
             // post request
             Request request = new Request.Builder()
@@ -76,13 +76,17 @@ public class SearchTest {
                     .build();
             // receive json response and parse to string
             Response response = client.newCall(request).execute();
+
             assertEquals(201, response.code());
+
             jsonStr = response.body().string();
             // parse json into job list
             searchResults = new Gson().fromJson(jsonStr, listType);
+            Collections.sort(searchResults);    // sort results based on ascending job id
             // test
-            //System.out.println(searchResults.get(0).getEmployer().getName());
-            assertEquals(1, searchResults.size());
+            assertEquals(2, searchResults.size());
+            assertEquals(4, searchResults.get(0).getId());
+            assertEquals(5, searchResults.get(1).getId());
         }
     }
 }

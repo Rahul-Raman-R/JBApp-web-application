@@ -3,14 +3,17 @@ package model;
 import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
+import org.jetbrains.annotations.NotNull;
 
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
 
 
 
 @DatabaseTable(tableName = "jobs")
-public class Job {
+public class Job implements Comparable<Job> {
+    public static final String JOB_ID = "id";
     public static final String JOB_TITLE = "title";
     public static final String JOB_DOMAIN = "domain";
 
@@ -166,5 +169,14 @@ public class Job {
                 ", payAmount=" + payAmount +
                 ", employer=" + employer +
                 '}';
+    }
+
+    @Override
+    public int compareTo(@NotNull Job o) {
+        if(this.getId() > o.getId())
+            return 1;
+        else if (this.getId() == o.getId())
+            return 0 ;
+        return -1 ;
     }
 }
