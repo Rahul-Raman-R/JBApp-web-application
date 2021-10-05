@@ -4,9 +4,7 @@ import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import model.Employer;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import org.junit.jupiter.api.*;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -38,7 +36,6 @@ public class EmployerTest {
         // delete all rows in the employers table before each test case
         @BeforeEach
         public void setUpEach() throws SQLException {
-
             TableUtils.clearTable(connectionSource, Employer.class);
         }
 
@@ -134,13 +131,12 @@ public class EmployerTest {
 
             String endpoint = BASE_URL + "/employers";
 
-            OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
                     .url(endpoint)
                     .build();
             Response response = client.newCall(request).execute();
+            System.out.println(response.body().string());
             assertEquals(200, response.code());
-
         }
     }
 

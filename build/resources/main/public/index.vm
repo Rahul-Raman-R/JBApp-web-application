@@ -6,6 +6,7 @@
 <div>
     <p><a href="/employers">Show all employers</a></p>
     <p><a href="/addemployers">Add an employer</a></p>
+    <p><a href="/search">Search jobs</a></p>
 </div>
 #else
 <h1>Please provide a username!</h1>

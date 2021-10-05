@@ -1,27 +1,32 @@
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 import model.Job;
-import okhttp3.Headers;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import org.junit.jupiter.api.*;
+
+import javax.print.attribute.standard.JobName;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class JobTest {
+public class SearchTest {
 
     private final String URI = "jdbc:sqlite:./JBApp.db";
 
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class JobORMLiteDaoTest {
+    class SearchORMLiteDaoTest {
+
         private ConnectionSource connectionSource;
         private Dao<Job, Integer> dao;
 
@@ -43,7 +48,7 @@ public class JobTest {
 
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-    class JobAPITest {
+    class SearchAPITest {
 
         final String BASE_URL = "http://localhost:7000";
         private OkHttpClient client;
@@ -54,14 +59,29 @@ public class JobTest {
         }
 
         @Test
-        public void testHTTPGetJobsEndPoint() throws IOException {
-            Request request = new Request.Builder()
-                    .url(BASE_URL + "/jobs")
+        public void testHTTPGetSearchEndpoint() throws IOException {
+            String endpoint = BASE_URL + "/search";
+            List<Job> searchResults = new ArrayList<>();
+            Type listType = new TypeToken<List<Job>>() {}.getType();
+            String jsonStr = "";
+            // construct post form with parameters
+            RequestBody formBody = new FormBody.Builder()
+                    .add("job-search-term", "R&D")
                     .build();
+            // post request
+            Request request = new Request.Builder()
+                    .url(endpoint)
+                    .post(formBody)
+                    .build();
+            // receive json response and parse to string
             Response response = client.newCall(request).execute();
-            assertEquals(response.code(),200);
+            assertEquals(201, response.code());
+            jsonStr = response.body().string();
+            // parse json into job list
+            searchResults = new Gson().fromJson(jsonStr, listType);
+            // test
+            System.out.println(searchResults.get(0).getDomain());
+
         }
-
     }
-
 }

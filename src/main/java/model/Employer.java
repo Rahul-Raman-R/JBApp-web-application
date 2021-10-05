@@ -7,6 +7,8 @@ import java.util.Objects;
 
 @DatabaseTable(tableName = "employers")
 public class Employer {
+    public static final String EMPLOYER_NAME = "name";
+
     @DatabaseField(generatedId = true, columnName="id")
     private Integer id;
     @DatabaseField(canBeNull = false, unique = true)

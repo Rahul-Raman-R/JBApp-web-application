@@ -1,6 +1,8 @@
 import com.google.gson.Gson;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.dao.RawRowMapper;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
@@ -15,10 +17,7 @@ import spark.template.velocity.VelocityTemplateEngine;
 
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Server {
 
@@ -27,6 +26,13 @@ public class Server {
         ConnectionSource connectionSource = new JdbcConnectionSource(URI);
         TableUtils.createTableIfNotExists(connectionSource, Employer.class);
         return DaoManager.createDao(connectionSource, Employer.class);
+    }
+
+    private static Dao getJobORMLiteDao() throws SQLException {
+        final String URI = "jdbc:sqlite:./JBApp.db";
+        ConnectionSource connectionSource = new JdbcConnectionSource(URI);
+        TableUtils.createTableIfNotExists(connectionSource, Job.class);
+        return DaoManager.createDao(connectionSource, Job.class);
     }
 
     public static void main(String[] args) {
@@ -71,6 +77,28 @@ public class Server {
             Map<String, Object> model = new HashMap<String, Object>();
             return new ModelAndView(model, "public/addemployers.vm");
         }, new VelocityTemplateEngine());
+
+        Spark.get("/search", (req, res) -> {
+            Map<String, Object> model = new HashMap<String, Object>();
+            return new ModelAndView(model, "public/search.vm");
+        }, new VelocityTemplateEngine());
+
+        Spark.post("/search", (req, res) -> {
+            String term = req.queryParams("job-search-term");
+            QueryBuilder<Employer, Integer> employerQB = getEmployerORMLiteDao().queryBuilder();
+            QueryBuilder<Job, Integer> jobQB = getJobORMLiteDao().queryBuilder();
+            jobQB.where()
+                    .like(Job.JOB_TITLE, term)
+                    .or()
+                    .like(Job.JOB_DOMAIN, term);
+            employerQB.where()
+                    .like(Employer.EMPLOYER_NAME, term);
+            //List<Job> results = jobQB.leftJoin(employerQB).query();
+            List<Job> results = jobQB.query();
+            res.status(201);
+            res.type("application/json");
+            return new Gson().toJson(results);
+        });
 
     }
 }

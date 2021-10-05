@@ -11,6 +11,8 @@ import java.util.Objects;
 
 @DatabaseTable(tableName = "jobs")
 public class Job {
+    public static final String JOB_TITLE = "title";
+    public static final String JOB_DOMAIN = "domain";
 
     @DatabaseField(generatedId = true)
     private int id;
