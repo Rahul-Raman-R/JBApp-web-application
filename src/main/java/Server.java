@@ -44,6 +44,8 @@ public class Server {
             Map<String, Object> model = new HashMap<>();
             if (req.cookie("username") != null)
                 model.put("username", req.cookie("username"));
+            if (req.cookie("color") != null)
+                model.put("color", req.cookie("color"));
             return new ModelAndView(model, "public/index.vm");
         }, new VelocityTemplateEngine());
 
@@ -51,6 +53,7 @@ public class Server {
             String username = req.queryParams("username");
             String color = req.queryParams("color");
             res.cookie("username", username);
+            res.cookie("color",color);
             res.redirect("/");
             return null;
         });
