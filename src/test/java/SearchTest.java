@@ -88,5 +88,244 @@ public class SearchTest {
             assertEquals(4, searchResults.get(0).getId());
             assertEquals(5, searchResults.get(1).getId());
         }
+        @Test
+        public void testCompanyNameExists() throws IOException {
+            String endpoint = BASE_URL + "/search";
+            List<Job> searchResults = new ArrayList<>();
+            Type listType = new TypeToken<List<Job>>() {}.getType();
+            String jsonStr = "";
+
+            // construct post form with parameters
+            RequestBody formBody = new FormBody.Builder()
+                    .add("job-search-term", "eyemed")
+                    .build();
+            // post request
+            Request request = new Request.Builder()
+                    .url(endpoint)
+                    .post(formBody)
+                    .build();
+            // receive json response and parse to string
+            Response response = client.newCall(request).execute();
+
+            assertEquals(201, response.code());
+
+            jsonStr = response.body().string();
+            // parse json into job list
+            searchResults = new Gson().fromJson(jsonStr, listType);
+            Collections.sort(searchResults);    // sort results based on ascending job id
+            // test
+
+            assertEquals(2, searchResults.size());
+            for (int i=0;i<searchResults.size();i++)
+            {
+                assertEquals("eyemed", searchResults.get(i).getEmployer().getName().toLowerCase());
+            }
+        }
+        @Test
+        public void testDomainNameExists() throws IOException {
+            String endpoint = BASE_URL + "/search";
+            List<Job> searchResults = new ArrayList<>();
+            Type listType = new TypeToken<List<Job>>() {}.getType();
+            String jsonStr = "";
+
+            // construct post form with parameters
+            RequestBody formBody = new FormBody.Builder()
+                    .add("job-search-term", "Management")
+                    .build();
+            // post request
+            Request request = new Request.Builder()
+                    .url(endpoint)
+                    .post(formBody)
+                    .build();
+            // receive json response and parse to string
+            Response response = client.newCall(request).execute();
+
+            assertEquals(201, response.code());
+
+            jsonStr = response.body().string();
+            // parse json into job list
+            searchResults = new Gson().fromJson(jsonStr, listType);
+            Collections.sort(searchResults);    // sort results based on ascending job id
+            // test
+
+
+            for (int i=0;i<searchResults.size();i++)
+            {
+                assertEquals("management".toLowerCase(), searchResults.get(i).getDomain().toLowerCase());
+            }
+        }
+        @Test
+        public void testJobTitleExists() throws IOException {
+            String endpoint = BASE_URL + "/search";
+            List<Job> searchResults = new ArrayList<>();
+            Type listType = new TypeToken<List<Job>>() {}.getType();
+            String jsonStr = "";
+
+            // construct post form with parameters
+            RequestBody formBody = new FormBody.Builder()
+                    .add("job-search-term", "Software Developer")
+                    .build();
+            // post request
+            Request request = new Request.Builder()
+                    .url(endpoint)
+                    .post(formBody)
+                    .build();
+            // receive json response and parse to string
+            Response response = client.newCall(request).execute();
+
+            assertEquals(201, response.code());
+
+            jsonStr = response.body().string();
+            // parse json into job list
+            searchResults = new Gson().fromJson(jsonStr, listType);
+            Collections.sort(searchResults);    // sort results based on ascending job id
+            // test
+
+
+            for (int i=0;i<searchResults.size();i++)
+            {
+                assertEquals("Software Developer".toLowerCase(), searchResults.get(i).getTitle().toLowerCase());
+            }
+        }
+        @Test
+        public void testEmptyInput() throws IOException {
+            String endpoint = BASE_URL + "/search";
+            List<Job> searchResults = new ArrayList<>();
+            Type listType = new TypeToken<List<Job>>() {}.getType();
+            String jsonStr = "";
+
+            // construct post form with parameters
+            RequestBody formBody = new FormBody.Builder()
+                    .add("job-search-term", "")
+                    .build();
+            // post request
+            Request request = new Request.Builder()
+                    .url(endpoint)
+                    .post(formBody)
+                    .build();
+            // receive json response and parse to string
+            Response response = client.newCall(request).execute();
+
+            assertEquals(201, response.code());
+
+            jsonStr = response.body().string();
+            // parse json into job list
+            searchResults = new Gson().fromJson(jsonStr, listType);
+            Collections.sort(searchResults);    // sort results based on ascending job id
+            // test
+            int i;
+            if(searchResults.size()>1)
+            {
+                i=1;
+            }
+            else
+            {
+               i=0;
+            }
+
+            assertEquals(1,i);
+        }
+
+        @Test
+        public void testCompanyNameSubstring() throws IOException {
+            String endpoint = BASE_URL + "/search";
+            List<Job> searchResults = new ArrayList<>();
+            Type listType = new TypeToken<List<Job>>() {}.getType();
+            String jsonStr = "";
+
+            // construct post form with parameters
+            RequestBody formBody = new FormBody.Builder()
+                    .add("job-search-term", "Coca")
+                    .build();
+            // post request
+            Request request = new Request.Builder()
+                    .url(endpoint)
+                    .post(formBody)
+                    .build();
+            // receive json response and parse to string
+            Response response = client.newCall(request).execute();
+
+            assertEquals(201, response.code());
+
+            jsonStr = response.body().string();
+            // parse json into job list
+            searchResults = new Gson().fromJson(jsonStr, listType);
+            Collections.sort(searchResults);    // sort results based on ascending job id
+            // test
+           for(int i=0;i<searchResults.size();i++)
+           {
+               assertEquals(true,searchResults.get(i).getEmployer().getName().toLowerCase().contains("Coca".toLowerCase()));
+
+
+           }
+        }
+        @Test
+        public void testTitleSubstring() throws IOException {
+            String endpoint = BASE_URL + "/search";
+            List<Job> searchResults = new ArrayList<>();
+            Type listType = new TypeToken<List<Job>>() {}.getType();
+            String jsonStr = "";
+
+            // construct post form with parameters
+            RequestBody formBody = new FormBody.Builder()
+                    .add("job-search-term", "Scientist")
+                    .build();
+            // post request
+            Request request = new Request.Builder()
+                    .url(endpoint)
+                    .post(formBody)
+                    .build();
+            // receive json response and parse to string
+            Response response = client.newCall(request).execute();
+
+            assertEquals(201, response.code());
+
+            jsonStr = response.body().string();
+            // parse json into job list
+            searchResults = new Gson().fromJson(jsonStr, listType);
+            Collections.sort(searchResults);    // sort results based on ascending job id
+            // test
+            for(int i=0;i<searchResults.size();i++)
+            {
+                assertEquals(true,searchResults.get(i).getTitle().toLowerCase().contains("Scientist".toLowerCase()));
+
+
+            }
+        }
+        @Test
+        public void testDomainSubstring() throws IOException {
+            String endpoint = BASE_URL + "/search";
+            List<Job> searchResults = new ArrayList<>();
+            Type listType = new TypeToken<List<Job>>() {}.getType();
+            String jsonStr = "";
+
+            // construct post form with parameters
+            RequestBody formBody = new FormBody.Builder()
+                    .add("job-search-term", "Software")
+                    .build();
+            // post request
+            Request request = new Request.Builder()
+                    .url(endpoint)
+                    .post(formBody)
+                    .build();
+            // receive json response and parse to string
+            Response response = client.newCall(request).execute();
+
+            assertEquals(201, response.code());
+
+            jsonStr = response.body().string();
+            // parse json into job list
+            searchResults = new Gson().fromJson(jsonStr, listType);
+            System.out.print(searchResults);
+            Collections.sort(searchResults);    // sort results based on ascending job id
+            // test
+            for(int i=0;i<searchResults.size();i++)
+            {
+                assertEquals(true,searchResults.get(i).getDomain().toLowerCase().contains("Software".toLowerCase()));
+
+
+            }
+        }
     }
 }
+
